@@ -1,0 +1,19 @@
+[project]
+name = "character-manager"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "The Cactus",email = "calandra.aj@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "quart (>=0.20.0,<0.21.0)"
+]
+
+[tool.poetry]
+packages = [{include = "character_manager", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
