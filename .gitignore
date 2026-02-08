@@ -206,5 +206,3 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# External Submodule
-src/pf2e

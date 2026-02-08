@@ -1,3 +1,0 @@
-[submodule "src/pf2e"]
-	path = src/pf2e
-	url = git@github.com:foundryvtt/pf2e.git
