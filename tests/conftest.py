@@ -7,3 +7,4 @@ from character_manager import app, init_db
 def configure_db(tmpdir):
     app.config['DATABASE'] = str(tmpdir.join('blog.db'))
     init_db()
+

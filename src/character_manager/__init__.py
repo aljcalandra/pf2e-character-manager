@@ -1,13 +1,24 @@
 from pathlib import Path
 from sqlite3 import dbapi2 as sqlite3
 from quart import Quart
-from quart import render_template, g, redirect, request, url_for
+from quart import render_template, g, redirect, request, url_for, session
+from quart_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
+
+import os
 
 
 app = Quart(__name__)
 
+app.secret_key = bytes.fromhex(os.getenv("SECRET_KEY"))
+
+app.config["DISCORD_CLIENT_ID"] = os.getenv("DISCORD_CLIENT_ID")
+app.config["DISCORD_CLIENT_SECRET"] = os.getenv("DISCORD_CLIENT_SECRET")
+app.config["DISCORD_REDIRECT_URI"] = "http://127.0.0.1:5000/callback"
+
+discord = DiscordOAuth2Session(app)
+
 def run() -> None:
-    app.run()
+    app.run(debug=True)
 
 
 app.config.update({
@@ -59,3 +70,34 @@ async def create():
         return redirect(url_for("posts"))
     else:
         return await render_template("create.html")
+
+
+@app.route("/callback/")
+async def callback():
+    await discord.callback()
+    return redirect(url_for(".me"))
+
+@app.errorhandler(Unauthorized)
+async def redirect_unauthorized(e):
+    return redirect(url_for("login"))
+
+
+@app.route("/login/")
+async def login():
+    return await discord.create_session()
+
+
+@app.route("/me/")
+@requires_authorization
+async def me():
+    user = await discord.fetch_user()
+    return f"""
+        <html>
+            <head>
+                <title>{user.name}</title>
+            </head>
+            <body>
+                <img src='{user.avatar_url}' />
+                <p>{user.id}</p>
+            </body>
+        </html>"""
